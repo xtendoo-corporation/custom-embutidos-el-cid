@@ -1,0 +1,82 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * embutidoscid_sale_order_lot_selection_with_default_FEFO
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 00:00+0000\n"
+"PO-Revision-Date: 2026-05-08 00:00+0000\n"
+"Last-Translator: Daniel Domínguez (xtendoo)\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Manual\n"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_order_line__domain_lot_id
+msgid "Domain Lot"
+msgstr "Dominio de lote"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_order_line__expiration_date
+msgid "Expiration Date"
+msgstr "Fecha de caducidad"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_order_line__lot_id
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_report__lot_id
+#: model_terms:ir.ui.view,arch_db:embutidoscid_sale_order_lot_selection_with_default_FEFO.view_order_product_search
+msgid "Lot"
+msgstr "Lote"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model_terms:ir.ui.view,arch_db:embutidoscid_sale_order_lot_selection_with_default_FEFO.view_order_tree_lot
+msgid "Expiration Date:"
+msgstr "Fecha de caducidad:"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model_terms:ir.ui.view,arch_db:embutidoscid_sale_order_lot_selection_with_default_FEFO.view_order_tree_lot
+msgid "Lot:"
+msgstr "Lote:"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_order_line__product_tracking
+msgid "Product Tracking"
+msgstr "Seguimiento del producto"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_stock_move__restrict_lot_id
+msgid "Restrict Lot"
+msgstr "Restringir lote"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model,name:embutidoscid_sale_order_lot_selection_with_default_FEFO.model_sale_report
+msgid "Sales Analysis Report"
+msgstr "Informe de análisis de ventas"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model,name:embutidoscid_sale_order_lot_selection_with_default_FEFO.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Línea de pedido de venta"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model,name:embutidoscid_sale_order_lot_selection_with_default_FEFO.model_stock_move
+msgid "Stock Move"
+msgstr "Movimiento de stock"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#. odoo-python
+#: code:addons/embutidoscid_sale_order_lot_selection_with_default_FEFO/models/sale_order_line.py:0
+msgid "The selected Lot/Serial number does not belong to the product."
+msgstr "El número de lote/serie seleccionado no pertenece al producto."
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#. odoo-python
+#: code:addons/embutidoscid_sale_order_lot_selection_with_default_FEFO/models/sale_order_line.py:0
+msgid "You can't modify the Lot/Serial number because some stock move has already been done."
+msgstr "No se puede modificar el número de lote/serie porque ya se ha realizado algún movimiento de stock."

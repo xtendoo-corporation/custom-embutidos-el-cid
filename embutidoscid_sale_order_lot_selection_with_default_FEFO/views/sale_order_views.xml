@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_order_tree_lot" model="ir.ui.view">
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='order_line']/list/field[@name='product_template_id']"
+                position="after"
+            >
+                <field
+                    name="lot_id"
+                    invisible="not product_id or product_tracking=='none'"
+                    readonly="qty_delivered>0"
+                    context="{'default_product_id': product_id}"
+                    groups="stock.group_production_lot"
+                    optional="show"
+                />
+                <field
+                    name="expiration_date"
+                    invisible="not product_id or product_tracking=='none'"
+                    readonly="1"
+                    groups="stock.group_production_lot"
+                    optional="show"
+                />
+            </xpath>
+            <xpath
+                expr="//field[@name='order_line']/form//div[@name='ordered_qty']"
+                position="after"
+            >
+                <field
+                    name="lot_id"
+                    invisible="not product_id or product_tracking=='none'"
+                    readonly="qty_delivered>0"
+                    context="{'default_product_id': product_id}"
+                    groups="stock.group_production_lot"
+                />
+                <field
+                    name="expiration_date"
+                    invisible="not product_id or product_tracking=='none'"
+                    readonly="1"
+                    groups="stock.group_production_lot"
+                />
+            </xpath>
+            <xpath
+                expr="//field[@name='order_line']/kanban/templates/t[@t-name='card']//div[field[@name='product_uom_qty']]"
+                position="after"
+            >
+                <div
+                    class="text-muted"
+                    t-if="record.lot_id.value"
+                    groups="stock.group_production_lot"
+                >
+                    Lot:
+                    <field
+                        name="lot_id"
+                        invisible="not product_id or product_tracking=='none'"
+                        context="{'default_product_id': product_id}"
+                    />
+                </div>
+                <div
+                    class="text-muted"
+                    t-if="record.expiration_date.value"
+                    groups="stock.group_production_lot"
+                >
+                    Expiration Date:
+                    <field name="expiration_date" />
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

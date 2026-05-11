@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.picking.all.done</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_cancel']" position="before">
+                <button
+                    name="action_sale_order_confirm_and_delivery"
+                    string="Confirm and Deliver"
+                    type="object"
+                    class="btn-secondary"
+                    invisible="state not in ('draft', 'sent')"
+                />
+<!--                <button-->
+<!--                    name="action_sale_order_confirm_and_invoice"-->
+<!--                    string="Confirm, Deliver and Invoice"-->
+<!--                    type="object"-->
+<!--                    class="btn-secondary"-->
+<!--                    invisible="state not in ('draft', 'sent')"-->
+<!--                />-->
+                <!-- Pedido confirmado(Pedido de ventas) -->
+                <button
+                    name="action_sale_order_delivery"
+                    string="Deliver All"
+                    type="object"
+                    class="btn-secondary"
+                    invisible="state != 'sale'"
+                />
+                <button
+                    name="action_sale_order_delivery_and_invoiced"
+                    string="Deliver and Invoice"
+                    type="object"
+                    class="btn-secondary"
+                    invisible="state != 'sale'"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
