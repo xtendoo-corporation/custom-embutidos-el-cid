@@ -13,13 +13,13 @@
                     class="btn-secondary"
                     invisible="state not in ('draft', 'sent')"
                 />
-<!--                <button-->
-<!--                    name="action_sale_order_confirm_and_invoice"-->
-<!--                    string="Confirm, Deliver and Invoice"-->
-<!--                    type="object"-->
-<!--                    class="btn-secondary"-->
-<!--                    invisible="state not in ('draft', 'sent')"-->
-<!--                />-->
+                <button
+                    name="action_sale_order_confirm_and_invoice"
+                    string="Confirm, Deliver and Invoice"
+                    type="object"
+                    class="btn-secondary"
+                    invisible="state not in ('draft', 'sent')"
+                />
                 <!-- Pedido confirmado(Pedido de ventas) -->
                 <button
                     name="action_sale_order_delivery"
