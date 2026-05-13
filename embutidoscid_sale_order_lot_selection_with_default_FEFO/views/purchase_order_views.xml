@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="purchase_order_form_lot_selection" model="ir.ui.view">
+        <field name="name">purchase.order.form.lot.selection</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='order_line']/list/field[@name='product_id']"
+                position="after"
+            >
+                <field name="product_tracking" column_invisible="True" />
+                <field
+                    name="lot_id"
+                    invisible="not product_id or product_tracking == 'none'"
+                    readonly="state in ('purchase', 'to approve', 'cancel')"
+                    context="{'default_product_id': product_id}"
+                    groups="stock.group_production_lot"
+                    optional="show"
+                />
+                <field
+                    name="expiration_date"
+                    invisible="not product_id or product_tracking == 'none'"
+                    readonly="1"
+                    groups="stock.group_production_lot"
+                    optional="show"
+                />
+            </xpath>
+
+            <xpath
+                expr="//field[@name='order_line']/form//field[@name='product_id']"
+                position="after"
+            >
+                <field name="product_tracking" invisible="1" />
+                <field
+                    name="lot_id"
+                    invisible="not product_id or product_tracking == 'none'"
+                    readonly="state in ('purchase', 'to approve', 'cancel')"
+                    context="{'default_product_id': product_id}"
+                    groups="stock.group_production_lot"
+                />
+                <field
+                    name="expiration_date"
+                    invisible="not product_id or product_tracking == 'none'"
+                    readonly="1"
+                    groups="stock.group_production_lot"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

@@ -23,11 +23,13 @@ msgid "Domain Lot"
 msgstr "Dominio de lote"
 
 #. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_purchase_order_line__expiration_date
 #: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_order_line__expiration_date
 msgid "Expiration Date"
 msgstr "Fecha de caducidad"
 
 #. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_purchase_order_line__lot_id
 #: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_order_line__lot_id
 #: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_report__lot_id
 #: model_terms:ir.ui.view,arch_db:embutidoscid_sale_order_lot_selection_with_default_FEFO.view_order_product_search
@@ -45,6 +47,7 @@ msgid "Lot:"
 msgstr "Lote:"
 
 #. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_purchase_order_line__product_tracking
 #: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_sale_order_line__product_tracking
 msgid "Product Tracking"
 msgstr "Seguimiento del producto"
@@ -53,6 +56,12 @@ msgstr "Seguimiento del producto"
 #: model:ir.model.fields,field_description:embutidoscid_sale_order_lot_selection_with_default_FEFO.field_stock_move__restrict_lot_id
 msgid "Restrict Lot"
 msgstr "Restringir lote"
+
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
+#: model:ir.model,name:embutidoscid_sale_order_lot_selection_with_default_FEFO.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "Línea de pedido de compra"
 
 #. module: embutidoscid_sale_order_lot_selection_with_default_FEFO
 #: model:ir.model,name:embutidoscid_sale_order_lot_selection_with_default_FEFO.model_sale_report
