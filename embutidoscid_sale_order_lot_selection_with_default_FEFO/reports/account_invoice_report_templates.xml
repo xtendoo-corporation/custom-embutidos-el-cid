@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Reporte de Factura - Añadir Lote y Fecha de Caducidad -->
+    <template id="report_invoice_document_lot_inherit" inherit_id="account.report_invoice_document">
+        <!-- Añadir columnas de Lote y Fecha de Caducidad en el encabezado -->
+        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_quantity']" position="after">
+            <th name="th_lot_number" class="text-start" groups="stock.group_production_lot">Lote</th>
+            <th name="th_lot_expiration_date" class="text-start" groups="stock.group_production_lot">Fecha de caducidad</th>
+        </xpath>
+
+        <!-- Añadir datos de Lote y Fecha de Caducidad en las líneas de producto -->
+        <xpath expr="//table[@name='invoice_line_table']/tbody//t[@name='account_invoice_line_accountable']/td[@name='td_quantity']" position="after">
+            <td name="td_lot_number" class="text-start" groups="stock.group_production_lot">
+                <span t-if="line.lot_id" t-field="line.lot_id.name"/>
+            </td>
+            <td name="td_lot_expiration_date" class="text-start" groups="stock.group_production_lot">
+                <span t-if="line.expiration_date" t-field="line.expiration_date" t-options="{'widget': 'date'}"/>
+            </td>
+        </xpath>
+    </template>
+</odoo>
+

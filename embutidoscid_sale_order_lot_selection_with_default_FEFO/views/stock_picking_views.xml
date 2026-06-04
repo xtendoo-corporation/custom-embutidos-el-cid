@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Vista de formulario de picking para mostrar lote y fecha de caducidad en las líneas de entrada -->
+    <record id="view_picking_form_lot_expiration" model="ir.ui.view">
+        <field name="name">stock.picking.form.lot.expiration</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <!-- Añadir campo de fecha de caducidad en la lista de move_ids -->
+            <xpath
+                expr="//field[@name='move_ids']//field[@name='lot_ids']"
+                position="after"
+            >
+                <field
+                    name="expiration_date"
+                    optional="show"
+                    groups="stock.group_production_lot"
+                    string="Caducidad"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista de operaciones detalladas para mostrar fecha de caducidad -->
+    <record id="view_stock_move_line_operation_tree_expiration" model="ir.ui.view">
+        <field name="name">stock.move.line.operations.list.expiration</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='lot_id']"
+                position="attributes"
+            >
+                <attribute name="string">Lote</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='lot_name']"
+                position="attributes"
+            >
+                <attribute name="string">Lote</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='lot_id']"
+                position="after"
+            >
+                <field
+                    name="expiration_date"
+                    optional="show"
+                    groups="stock.group_production_lot"
+                    column_invisible="parent.has_tracking == 'none' or not parent.show_lots_m2o"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista de operaciones detalladas adicionales -->
+    <record id="view_stock_move_line_detailed_operation_tree_expiration" model="ir.ui.view">
+        <field name="name">stock.move.line.detailed.operations.list.expiration</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='lot_id']"
+                position="attributes"
+            >
+                <attribute name="string">Lote</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='lot_name']"
+                position="attributes"
+            >
+                <attribute name="string">Lote</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='lot_id']"
+                position="after"
+            >
+                <field
+                    name="expiration_date"
+                    optional="show"
+                    groups="stock.group_production_lot"
+                    invisible="not lots_visible"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

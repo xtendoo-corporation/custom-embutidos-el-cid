@@ -13,6 +13,13 @@ class StockMove(models.Model):
         check_company=True,
         index="btree_not_null",
     )
+    expiration_date = fields.Datetime(
+        related="restrict_lot_id.expiration_date",
+        string="Expiration Date",
+        store=True,
+        readonly=True,
+        copy=False,
+    )
 
     def _update_reserved_quantity(
         self, need, location_id, lot_id=None, package_id=None, owner_id=None, strict=True
