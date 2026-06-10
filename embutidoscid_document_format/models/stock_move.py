@@ -28,6 +28,10 @@ class StockMove(models.Model):
         compute="_compute_sale_prices",
         string="Moneda",
     )
+    sale_tax_id = fields.Many2one(
+        "account.tax",
+        compute="_compute_sale_prices",
+    )
 
     @api.depends("sale_line_id", "sale_line_id.price_unit", "sale_line_id.discount",
                  "sale_line_id.price_subtotal", "sale_line_id.price_total",
@@ -46,10 +50,12 @@ class StockMove(models.Model):
                 move.sale_price_subtotal = sale_line.price_subtotal * qty_ratio
                 move.sale_price_total = sale_line.price_total * qty_ratio
                 move.sale_currency_id = sale_line.currency_id
+                move.sale_tax_id = sale_line.tax_ids
             else:
                 move.sale_price_unit = 0.0
                 move.sale_discount = 0.0
                 move.sale_price_subtotal = 0.0
                 move.sale_price_total = 0.0
                 move.sale_currency_id = False
+                move.sale_tax_id = False
 
