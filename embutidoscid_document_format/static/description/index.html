@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Embutidos CID - Document Format</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 30px; }
+        .feature { background: #ecf0f1; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .feature h3 { color: #2980b9; margin-top: 0; }
+        ul { padding-left: 20px; }
+        .highlight { background: #3498db; color: white; padding: 2px 8px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Embutidos CID - Formato de Documentos</h1>
+
+    <p>
+        Módulo personalizado que extiende el formato de impresión de los albaranes de entrega
+        para incluir toda la información de <span class="highlight">trazabilidad</span> y
+        <span class="highlight">datos económicos</span> necesarios.
+    </p>
+
+    <h2>✨ Características Principales</h2>
+
+    <div class="feature">
+        <h3>📦 Información de Trazabilidad</h3>
+        <ul>
+            <li>Número de lote completo</li>
+            <li>Fecha de caducidad del producto</li>
+            <li>Datos completos de cada producto</li>
+        </ul>
+    </div>
+
+    <div class="feature">
+        <h3>💰 Información Económica</h3>
+        <ul>
+            <li>Precio unitario de venta</li>
+            <li>Porcentaje de descuento aplicado</li>
+            <li>Subtotal por línea</li>
+            <li>Resumen de totales con impuestos</li>
+        </ul>
+    </div>
+
+    <div class="feature">
+        <h3>📋 Información del Pedido</h3>
+        <ul>
+            <li>Referencia del pedido de venta</li>
+            <li>Referencia del cliente</li>
+            <li>Condiciones de pago</li>
+        </ul>
+    </div>
+
+    <h2>🚀 Funcionalidad</h2>
+    <ul>
+        <li>Se integra automáticamente con pedidos de venta</li>
+        <li>Calcula precios proporcionales a la cantidad entregada</li>
+        <li>Compatible con entregas parciales</li>
+        <li>Solo muestra datos económicos en albaranes con pedido asociado</li>
+    </ul>
+
+    <h2>📦 Dependencias</h2>
+    <ul>
+        <li><strong>sale_stock</strong> - Integración ventas/inventario</li>
+        <li><strong>product_expiry</strong> - Gestión de caducidad</li>
+    </ul>
+
+    <h2>👨‍💻 Autor</h2>
+    <p>
+        <strong>Daniel Domínguez</strong><br>
+        <a href="https://xtendoo.es">Xtendoo</a>
+    </p>
+</body>
+</html>
+

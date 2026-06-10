@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extender reporte de albarán con datos económicos y trazabilidad -->
+
+    <!-- Añadir columnas en encabezado: Precio, Descuento, Subtotal -->
+    <template id="report_delivery_document_inherit" inherit_id="stock.report_delivery_document">
+        <!-- Añadir columnas de precio después de cantidad -->
+        <xpath expr="//thead/tr/th[@name='th_sml_quantity']" position="after">
+            <th name="th_price_unit" class="text-end">
+                <span>Precio</span>
+            </th>
+            <th name="th_discount" class="text-end">
+                <span>Desc. %</span>
+            </th>
+            <th name="th_subtotal" class="text-end">
+                <span>Subtotal</span>
+            </th>
+        </xpath>
+
+        <!-- Añadir columna de fecha caducidad después de lote -->
+        <xpath expr="//thead/tr/th[@name='lot_serial']" position="after">
+<!--            <th name="th_expiration" class="text-end" groups="stock.group_production_lot">-->
+<!--                <span>Caducidad</span>-->
+<!--            </th>-->
+        </xpath>
+    </template>
+
+    <!-- Añadir datos de precio en líneas sin lote/serial -->
+    <template id="report_delivery_line_inherit" inherit_id="stock.report_delivery_document">
+        <xpath expr="//td[@class='o_td_quantity text-end']" position="after">
+            <td name="td_price_unit" class="text-end">
+                <span t-if="move.sale_line_id" t-field="move.sale_price_unit"/>
+            </td>
+            <td name="td_discount" class="text-end">
+                <span t-if="move.sale_line_id and move.sale_discount" t-field="move.sale_discount"/>
+            </td>
+            <td name="td_subtotal" class="text-end">
+                <span t-if="move.sale_line_id" t-field="move.sale_price_subtotal"/>
+            </td>
+        </xpath>
+    </template>
+
+    <!-- Añadir datos de precio en líneas con lote/serial -->
+    <template id="stock_report_delivery_has_serial_move_line_inherit" inherit_id="stock.stock_report_delivery_has_serial_move_line">
+        <!-- Fecha de caducidad después de lote -->
+        <xpath expr="//td[@name='move_line_lot_quantity']" position="before">
+<!--            <td name="td_expiration" class="text-end" groups="stock.group_production_lot">-->
+<!--                <span t-if="move_line.lot_id.expiration_date"-->
+<!--                      t-field="move_line.lot_id.expiration_date"-->
+<!--                      t-options="{'widget': 'date'}"/>-->
+<!--            </td>-->
+        </xpath>
+
+        <!-- Datos económicos en líneas con serial -->
+        <xpath expr="//td[@name='move_line_lot_quantity']" position="after">
+            <td name="td_price_unit" class="text-end">
+                <span t-if="move_line.move_id.sale_line_id"
+                      t-field="move_line.move_id.sale_price_unit"/>
+            </td>
+            <td name="td_discount" class="text-end">
+                <span t-if="move_line.move_id.sale_line_id and move_line.move_id.sale_discount"
+                      t-field="move_line.move_id.sale_discount"/>
+            </td>
+            <td name="td_subtotal" class="text-end">
+                <span t-if="move_line.move_id.sale_line_id">
+                    <t t-set="line_subtotal" t-value="move_line.move_id.sale_price_unit * move_line.quantity * (1 - move_line.move_id.sale_discount / 100.0)"/>
+                    <span t-esc="'%.2f' % line_subtotal"/>
+                </span>
+            </td>
+        </xpath>
+    </template>
+
+    <!-- Añadir sección de totales al final del documento -->
+    <template id="report_delivery_document_totals" inherit_id="stock.report_delivery_document">
+        <xpath expr="//table[@name='stock_move_line_table']" position="after">
+            <div class="clearfix" t-if="any(m.sale_line_id for m in o.move_ids)">
+                <div class="row">
+                    <div class="col-6"/>
+                    <div class="col-6">
+                        <table class="table table-sm" style="page-break-inside: avoid;">
+                            <t t-set="subtotal_without_tax" t-value="sum(m.sale_price_subtotal for m in o.move_ids if m.sale_line_id)"/>
+                            <t t-set="total_with_tax" t-value="sum(m.sale_price_total for m in o.move_ids if m.sale_line_id)"/>
+                            <t t-set="tax_amount" t-value="total_with_tax - subtotal_without_tax"/>
+                            <t t-set="currency" t-value="o.move_ids.filtered(lambda m: m.sale_currency_id)[:1].sale_currency_id"/>
+
+                            <tr class="border-black">
+                                <td><strong>Subtotal sin impuestos</strong></td>
+                                <td class="text-end">
+                                    <span t-if="currency" t-esc="'%.2f' % subtotal_without_tax"/>
+                                    <span t-if="currency" t-field="currency.symbol"/>
+                                </td>
+                            </tr>
+                            <tr t-if="tax_amount">
+                                <td>Impuestos</td>
+                                <td class="text-end">
+                                    <span t-esc="'%.2f' % tax_amount"/>
+                                    <span t-if="currency" t-field="currency.symbol"/>
+                                </td>
+                            </tr>
+                            <tr class="border-black o_total">
+                                <td><strong>Total</strong></td>
+                                <td class="text-end">
+                                    <strong>
+                                        <span t-esc="'%.2f' % total_with_tax"/>
+                                        <span t-if="currency" t-field="currency.symbol"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Añadir información adicional del pedido en cabecera -->
+    <template id="report_delivery_document_header" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[hasclass('page')]//h2" position="after">
+            <div class="row mt-4 mb-2" t-if="o.sale_id">
+                <div class="col-6">
+                    <strong>Pedido:</strong> <span t-field="o.sale_id.name"/><br/>
+                    <strong t-if="o.sale_id.client_order_ref">Ref. Cliente:</strong>
+                    <span t-if="o.sale_id.client_order_ref" t-field="o.sale_id.client_order_ref"/>
+                </div>
+                <div class="col-6">
+                    <strong t-if="o.sale_id.payment_term_id">Condiciones de pago:</strong>
+                    <span t-if="o.sale_id.payment_term_id" t-field="o.sale_id.payment_term_id.name"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
+

@@ -14,7 +14,7 @@
         "views/stock_picking_views.xml",
         "reports/sale_order_report_templates.xml",
         "reports/account_invoice_report_templates.xml",
-        "reports/stock_picking_report_templates.xml",
+        # "reports/stock_picking_report_templates.xml",
         "reports/sale_report_views.xml",
     ],
     "demo": ["demo/sale_demo.xml"],
