@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models
+from odoo import models, _
+from odoo.exceptions import UserError
 
 
 class SaleOrder(models.Model):
@@ -46,6 +47,8 @@ class SaleOrder(models.Model):
         return True
 
     def action_sale_order_confirm_and_invoice(self):
+        if not self.partner_id.invoicing_directly:
+            raise UserError(_("Este cliente no factura directo, usa el botón 'Confirmar y entregar'"))
         self.action_sale_order_confirm_and_delivery()
         invoices = self._create_invoices()
         return self.action_view_invoice(invoices=invoices)

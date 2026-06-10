@@ -30,7 +30,10 @@
     "category": "Sales",
     "depends": ["sale_stock"],
     "license": "AGPL-3",
-    "data": ["views/views.xml"],
+    "data": [
+        "views/views.xml",
+        "views/res_partner_views.xml",
+    ],
     "installable": True,
     "auto_install": False,
 }
