@@ -66,7 +66,7 @@
                       t-field="move_line.move_id.sale_discount"/>
             </td>
             <td name="td_tax" class="text-end">
-                <t t-if="move_line.move_id.sale_line_id and move_line.move_id.sale_discount" t-foreach="move_line.move_id.sale_line_id.tax_id" t-as="tax">
+                <t t-if="move_line.move_id.sale_line_id and move_line.move_id.sale_discount" t-foreach="move_line.move_id.sale_line_id.tax_ids" t-as="tax">
                     <span t-field="tax.amount"/>%
                 </t>
             </td>
