@@ -28,7 +28,7 @@ class StockMove(models.Model):
         compute="_compute_sale_prices",
         string="Moneda",
     )
-    sale_tax_id = fields.Many2one(
+    sale_tax_id = fields.Many2many(
         "account.tax",
         compute="_compute_sale_prices",
     )
