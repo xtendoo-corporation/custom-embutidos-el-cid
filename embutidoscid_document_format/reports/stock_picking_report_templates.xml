@@ -66,8 +66,9 @@
                       t-field="move_line.move_id.sale_discount"/>
             </td>
             <td name="td_tax" class="text-end">
-                <span t-if="move_line.move_id.sale_line_id and move_line.move_id.sale_discount"
-                      t-field="move_line.move_id.sale_tax_id"/>
+                <t t-if="move_line.move_id.sale_line_id and move_line.move_id.sale_discount" t-foreach="move_line.move_id.sale_line_id.tax_id" t-as="tax">
+                    <span t-field="tax.amount"/>%
+                </t>
             </td>
             <td name="td_subtotal" class="text-end">
                 <span t-if="move_line.move_id.sale_line_id">
