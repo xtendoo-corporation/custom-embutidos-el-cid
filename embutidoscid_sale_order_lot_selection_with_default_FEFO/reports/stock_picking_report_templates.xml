@@ -5,7 +5,7 @@
     <!-- Añadir columna de Fecha de Caducidad en el encabezado -->
     <template id="report_delivery_document_lot_inherit" inherit_id="stock.report_delivery_document">
         <xpath expr="//th[@name='lot_serial']" position="after">
-            <th name="th_lot_expiration_date" class="text-end" groups="stock.group_production_lot">Fecha de caducidad</th>
+            <th name="th_lot_expiration_date" class="text-end" groups="stock.group_production_lot" style="white-space:nowrap;">F. Caduc.</th>
         </xpath>
     </template>
 

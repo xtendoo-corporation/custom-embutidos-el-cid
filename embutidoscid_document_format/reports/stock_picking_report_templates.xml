@@ -4,12 +4,50 @@
 
     <!-- Añadir columnas en encabezado: Precio, Descuento, Subtotal -->
     <template id="report_delivery_document_inherit" inherit_id="stock.report_delivery_document">
+
+        <xpath expr="//h2" position="after">
+            <style name="stock_report_custom">
+                html { font-size: 11.5px; }
+                .table td, .table th {
+                    padding: 0.2rem 0.3rem;
+                }
+                th[name="lot_serial"] ~ th:not([name]),
+                th[name="th_lot_expiration_date"],
+                td[name="td_lot_expiration_date"] {
+                    width: 65px;
+                    white-space: nowrap;
+                }
+                th[name="th_sml_product"],
+                th[name="th_sm_product"] {
+                    width: auto;
+                }
+                th[name="th_price_unit"],
+                th[name="th_discount"],
+                th[name="the_tax"],
+                th[name="th_subtotal"] {
+                    width: 65px;
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//th[@name='lot_serial']" position="replace">
+            <th name="lot_serial" class="text-end" t-else="">Lote</th>
+        </xpath>
+
+        <xpath expr="//th[@name='th_sml_quantity']" position="replace">
+            <th name="th_sml_quantity" class="text-end">Entregados</th>
+        </xpath>
+
+        <xpath expr="//th[@name='th_sm_quantity']" position="replace">
+            <th name="th_sm_quantity" class="text-end"><strong>Entregados</strong></th>
+        </xpath>
+
         <!-- Añadir columnas de precio después de cantidad -->
         <xpath expr="//thead/tr/th[@name='th_sml_quantity']" position="after">
             <th name="th_price_unit" class="text-end">
                 <span>Precio</span>
             </th>
-            <th name="th_discount" class="text-end">
+            <th name="th_discount" class="text-end" style="white-space:nowrap;">
                 <span>Desc. %</span>
             </th>
             <th name="the_tax" class="text-end">
@@ -18,13 +56,6 @@
             <th name="th_subtotal" class="text-end">
                 <span>Subtotal</span>
             </th>
-        </xpath>
-
-        <!-- Añadir columna de fecha caducidad después de lote -->
-        <xpath expr="//thead/tr/th[@name='lot_serial']" position="after">
-<!--            <th name="th_expiration" class="text-end" groups="stock.group_production_lot">-->
-<!--                <span>Caducidad</span>-->
-<!--            </th>-->
         </xpath>
     </template>
 
@@ -66,8 +97,8 @@
                       t-field="move_line.move_id.sale_discount"/>
             </td>
             <td name="td_tax" class="text-end">
-                <t t-if="move_line.move_id.sale_line_id and move_line.move_id.sale_discount" t-foreach="move_line.move_id.sale_line_id.tax_ids" t-as="tax">
-                    <span t-field="tax.amount"/>%
+                <t t-if="move_line.move_id.sale_line_id" t-foreach="move_line.move_id.sale_line_id.tax_ids" t-as="tax">
+                    <span t-field="tax.name"/>
                 </t>
             </td>
             <td name="td_subtotal" class="text-end">
@@ -128,7 +159,6 @@
         <xpath expr="//div[hasclass('page')]//h2" position="after">
             <div class="row mt-4 mb-2" t-if="o.sale_id">
                 <div class="col-6">
-                    <strong>Pedido:</strong> <span t-field="o.sale_id.name"/><br/>
                     <strong t-if="o.sale_id.client_order_ref">Ref. Cliente:</strong>
                     <span t-if="o.sale_id.client_order_ref" t-field="o.sale_id.client_order_ref"/>
                 </div>
@@ -137,6 +167,13 @@
                     <span t-if="o.sale_id.payment_term_id" t-field="o.sale_id.payment_term_id.name"/>
                 </div>
             </div>
+        </xpath>
+    </template>
+
+    <!-- Renombrar columna de product_expiry a "F. Caduc." -->
+    <template id="rename_product_expiry_header" inherit_id="product_expiry.stock_report_delivery_document_inherit_product_expiry">
+        <xpath expr="//t[@name='expiry_date']/th" position="replace">
+            <th>F. Caduc.</th>
         </xpath>
     </template>
 </odoo>
