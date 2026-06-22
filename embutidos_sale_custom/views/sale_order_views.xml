@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="payment_term_id" position="after">
+                <field name="repartidor_empleado_id" placeholder="Repartidor"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_sale_order_tree_inherit" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="before">
+                <field name="repartidor_empleado_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_sale_order_quotation_tree_inherit" model="ir.ui.view">
+        <field name="name">sale.order.quotation.tree.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="before">
+                <field name="repartidor_empleado_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_sale_order_search_inherit" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="repartidor_empleado_id"/>
+                <filter name="repartidor_filter" string="Con repartidor"
+                        domain="[('repartidor_empleado_id', '!=', False)]"/>
+                <filter name="group_by_repartidor" string="Repartidor"
+                        context="{'group_by': 'repartidor_empleado_id'}"/>
+            </field>
+        </field>
+    </record>
+</odoo>
