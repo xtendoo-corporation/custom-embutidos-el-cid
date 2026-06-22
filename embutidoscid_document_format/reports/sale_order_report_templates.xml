@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_document_inherit" inherit_id="sale.report_saleorder_document">
+
+        <xpath expr="//th[@name='th_description']" position="replace">
+            <th name="th_description" class="text-start" style="width:40%;white-space:normal;word-wrap:break-word;">Descripción</th>
+        </xpath>
+
+        <xpath expr="//th[@name='th_priceunit']" position="replace">
+            <th name="th_priceunit" class="text-end text-nowrap" style="width:9%;">P. Unitario</th>
+        </xpath>
+
+        <xpath expr="//th[@name='th_subtotal']" position="attributes">
+            <attribute name="style">width:10%;</attribute>
+        </xpath>
+
+        <xpath expr="//td[@name='td_product_name']" position="attributes">
+            <attribute name="style">width:40%;white-space:normal;word-wrap:break-word;</attribute>
+        </xpath>
+
+        <xpath expr="//table[@class='o_has_total_table table o_main_table table-borderless']" position="before">
+            <style name="web_studio_lote_hide">
+                th[name="th_priceunit"] + th:not([name]),
+                td[name="td_product_priceunit"] + td:not([name]),
+                td[name="td_section_group_priceunit"] + td:not([name]) {
+                    display: none;
+                }
+                html {
+                    font-size: 11.5px;
+                }
+            </style>
+        </xpath>
+
+    </template>
+</odoo>

@@ -9,6 +9,7 @@
     "depends": ["sale_stock", "product_expiry"],
     "data": [
         "reports/stock_picking_report_templates.xml",
+        "reports/sale_order_report_templates.xml",
     ],
     "installable": True,
     "auto_install": False,
