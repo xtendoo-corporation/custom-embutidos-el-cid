@@ -5,7 +5,7 @@
         <!-- Añadir columnas de Lote y Fecha de Caducidad en el encabezado -->
         <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_quantity']" position="after">
             <th name="th_lot_number" class="text-start" groups="stock.group_production_lot">Lote</th>
-            <th name="th_lot_expiration_date" class="text-start" groups="stock.group_production_lot">Fecha de caducidad</th>
+            <th name="th_lot_expiration_date" class="text-start" groups="stock.group_production_lot" style="white-space:nowrap;">F. Caduc.</th>
         </xpath>
 
         <!-- Añadir datos de Lote y Fecha de Caducidad en las líneas de producto -->

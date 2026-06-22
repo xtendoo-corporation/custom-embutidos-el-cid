@@ -1,8 +1,18 @@
 def deactivate_web_studio_views(env):
-    view_ids = [
-        2596, 2651, 2657,  # sale order
-        2598, 2600, 2602, 2604, 2606, 2624, 2628, 2630,  # stock picking
+    target_templates = [
+        'sale.report_saleorder_document',
+        'stock.report_delivery_document',
+        'account.report_invoice_document',
     ]
-    views = env['ir.ui.view'].browse(view_ids).exists()
+    inherit_ids = []
+    for tmpl in target_templates:
+        view = env.ref(tmpl, False)
+        if view:
+            inherit_ids.append(view.id)
+    domain = [
+        ('name', '=ilike', 'web_studio.report_editor_customization_diff.view%'),
+        ('inherit_id', 'in', inherit_ids),
+    ]
+    views = env['ir.ui.view'].search(domain)
     if views:
         views.write({'active': False})
