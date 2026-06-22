@@ -13,5 +13,6 @@
     ],
     "installable": True,
     "auto_install": False,
+    "post_init_hook": "deactivate_web_studio_views",
 }
 
