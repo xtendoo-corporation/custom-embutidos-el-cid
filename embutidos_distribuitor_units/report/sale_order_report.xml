@@ -12,12 +12,14 @@
     </record>
 
     <template id="report_sale_order_unidades">
+        <t t-set="data_report_margin_top" t-value="60"/>
+        <t t-set="data_report_header_spacing" t-value="62"/>
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
                 <t t-set="company" t-value="docs[0].company_id if docs else None"/>
                 <div class="page">
                     <h2 class="text-center">Informe de Unidades</h2>
-                    <table class="table table-bordered table-sm mt-3">
+                    <table class="table table-borderless table-sm mt-3">
                         <thead>
                             <tr>
                                 <th>Cliente</th>
@@ -27,15 +29,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <t t-foreach="docs" t-as="order">
-                                <t t-foreach="order.order_line.filtered(lambda l: not l.display_type)" t-as="line">
+                            <t t-set="all_lines" t-value="[line for order in docs for line in order.order_line.filtered(lambda l: not l.display_type)]"/>
+                            <t t-foreach="sorted(all_lines, key=lambda l: (l.product_id.name or '', l.order_id.partner_id.name or ''))" t-as="line">
                                     <tr>
-                                        <td><span t-field="order.partner_id.name"/></td>
-                                        <td><span t-field="line.product_id.display_name"/></td>
+                                        <td><span t-field="line.order_id.partner_id.name"/></td>
+                                        <td><span t-field="line.product_id.name"/></td>
                                         <td class="text-center"><span t-field="line.unidades"/></td>
                                         <td class="text-center"><span t-field="line.product_uom_qty"/></td>
                                     </tr>
-                                </t>
                             </t>
                         </tbody>
                     </table>
