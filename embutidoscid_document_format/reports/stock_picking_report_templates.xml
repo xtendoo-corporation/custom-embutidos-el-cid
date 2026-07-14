@@ -11,9 +11,7 @@
                 .table td, .table th {
                     padding: 0.2rem 0.3rem;
                 }
-                th[name="lot_serial"] ~ th:not([name]),
-                th[name="th_lot_expiration_date"],
-                td[name="td_lot_expiration_date"] {
+                th[name="lot_serial"] ~ th:not([name]) {
                     width: 65px;
                     white-space: nowrap;
                 }
@@ -76,15 +74,6 @@
 
     <!-- Añadir datos de precio en líneas con lote/serial -->
     <template id="stock_report_delivery_has_serial_move_line_inherit" inherit_id="stock.stock_report_delivery_has_serial_move_line">
-        <!-- Fecha de caducidad después de lote -->
-        <xpath expr="//td[@name='move_line_lot_quantity']" position="before">
-<!--            <td name="td_expiration" class="text-end" groups="stock.group_production_lot">-->
-<!--                <span t-if="move_line.lot_id.expiration_date"-->
-<!--                      t-field="move_line.lot_id.expiration_date"-->
-<!--                      t-options="{'widget': 'date'}"/>-->
-<!--            </td>-->
-        </xpath>
-
         <!-- Datos económicos en líneas con serial -->
         <xpath expr="//td[@name='move_line_lot_quantity']" position="after">
             <t t-set="currency" t-value="o.move_ids.filtered(lambda m: m.sale_currency_id)[:1].sale_currency_id"/>
@@ -121,7 +110,8 @@
                         <table class="table table-sm" style="page-break-inside: avoid;">
                             <t t-set="subtotal_without_tax" t-value="sum(m.sale_price_subtotal for m in o.move_ids if m.sale_line_id)"/>
                             <t t-set="total_with_tax" t-value="sum(m.sale_price_total for m in o.move_ids if m.sale_line_id)"/>
-                            <t t-set="tax_amount" t-value="total_with_tax - subtotal_without_tax"/>
+                            <t t-set="iva_amount" t-value="sum(m.sale_price_tax_iva for m in o.move_ids if m.sale_line_id)"/>
+                            <t t-set="re_amount" t-value="sum(m.sale_price_tax_re for m in o.move_ids if m.sale_line_id)"/>
                             <t t-set="currency" t-value="o.move_ids.filtered(lambda m: m.sale_currency_id)[:1].sale_currency_id"/>
 
                             <tr class="border-black">
@@ -131,10 +121,17 @@
                                     <span t-if="currency" t-field="currency.symbol"/>
                                 </td>
                             </tr>
-                            <tr t-if="tax_amount">
-                                <td>Impuestos</td>
+                            <tr t-if="iva_amount">
+                                <td>IVA</td>
                                 <td class="text-end">
-                                    <span t-esc="'%.2f' % tax_amount"/>
+                                    <span t-esc="'%.2f' % iva_amount"/>
+                                    <span t-if="currency" t-field="currency.symbol"/>
+                                </td>
+                            </tr>
+                            <tr t-if="re_amount">
+                                <td>Recargo</td>
+                                <td class="text-end">
+                                    <span t-esc="'%.2f' % re_amount"/>
                                     <span t-if="currency" t-field="currency.symbol"/>
                                 </td>
                             </tr>
@@ -170,11 +167,13 @@
         </xpath>
     </template>
 
-    <!-- Renombrar columna de product_expiry a "F. Caduc." -->
-    <template id="rename_product_expiry_header" inherit_id="product_expiry.stock_report_delivery_document_inherit_product_expiry">
-        <xpath expr="//t[@name='expiry_date']/th" position="replace">
-            <th>F. Caduc.</th>
-        </xpath>
+    <!-- Quitar columna de fecha de caducidad -->
+    <template id="remove_product_expiry_header" inherit_id="product_expiry.stock_report_delivery_document_inherit_product_expiry">
+        <xpath expr="//t[@name='expiry_date']" position="replace"/>
+    </template>
+
+    <template id="remove_product_expiry_line" inherit_id="product_expiry.stock_report_delivery_has_serial_move_line_inherit_product_expiry">
+        <xpath expr="//t[@t-if='has_expiry_date']" position="replace"/>
     </template>
 </odoo>
 
