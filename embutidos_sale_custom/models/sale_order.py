@@ -8,3 +8,7 @@ class SaleOrder(models.Model):
         "hr.employee",
         string="Repartidor",
     )
+    show_sale_buttons = fields.Boolean(
+        related="partner_id.show_sale_buttons",
+        string="Mostrar botones de venta",
+    )

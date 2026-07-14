@@ -5,6 +5,15 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="show_sale_buttons" invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@name='action_sale_order_confirm_and_invoice']" position="attributes">
+                <attribute name="invisible">not show_sale_buttons or state not in ('draft', 'sent')</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_sale_order_delivery_and_invoiced']" position="attributes">
+                <attribute name="invisible">not show_sale_buttons or state != 'sale'</attribute>
+            </xpath>
             <field name="payment_term_id" position="after">
                 <field name="repartidor_empleado_id" placeholder="Repartidor"/>
             </field>
