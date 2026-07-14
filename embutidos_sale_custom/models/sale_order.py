@@ -7,6 +7,7 @@ class SaleOrder(models.Model):
     repartidor_empleado_id = fields.Many2one(
         "hr.employee",
         string="Repartidor",
+        required=True,
     )
     show_sale_buttons = fields.Boolean(
         related="partner_id.show_sale_buttons",
