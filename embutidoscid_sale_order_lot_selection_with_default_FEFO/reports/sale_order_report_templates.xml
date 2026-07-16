@@ -1,1 +1,4 @@
-<!-- Template inheritance removida: las columnas Lote/F. Caduc. se manejan desde embutidoscid_document_format -->
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template inheritance removida: las columnas Lote/F. Caduc. se manejan desde embutidoscid_document_format -->
+</odoo>

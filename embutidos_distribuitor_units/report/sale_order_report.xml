@@ -1,45 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="action_report_sale_order_unidades" model="ir.actions.report">
-        <field name="name">Unidades por Pedido</field>
+    <!-- Informe para Pesados (Oculto del menú) -->
+    <record id="action_report_sale_order_unidades_pesadas" model="ir.actions.report">
+        <field name="name">Unidades Pesado</field>
         <field name="model">sale.order</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">embutidos_distribuitor_units.report_sale_order_unidades</field>
-        <field name="report_file">embutidos_distribuitor_units.report_sale_order_unidades</field>
+        <field name="report_name">embutidos_distribuitor_units.report_sale_order_unidades_pesado</field>
+        <field name="report_file">embutidos_distribuitor_units.report_sale_order_unidades_pesado</field>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+    <!-- Informe para No Pesados (Oculto del menú) -->
+    <record id="action_report_sale_order_unidades_no_pesadas" model="ir.actions.report">
+        <field name="name">Unidades No Pesado</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">embutidos_distribuitor_units.report_sale_order_unidades_no_pesado</field>
+        <field name="report_file">embutidos_distribuitor_units.report_sale_order_unidades_no_pesado</field>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+    <!-- Acción de Servidor para descargar ambos en un ZIP -->
+    <record id="action_server_report_sale_order_unidades" model="ir.actions.server">
+        <field name="name">Unidades por Pedido (Separados)</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
-        <field name="print_report_name">'Unidades - ' + (object.name or '')</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_print_unidades_separadas()
+        </field>
     </record>
-
-    <template id="report_sale_order_unidades">
-        <t t-set="data_report_margin_top" t-value="60"/>
-        <t t-set="data_report_header_spacing" t-value="62"/>
+    <template id="report_sale_order_unidades_table">
+        <h2 class="text-center">Informe de Unidades <t t-if="titulo_tipo">(<t t-esc="titulo_tipo"/>)</t></h2>
+        <table class="table table-borderless table-sm mt-3">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Producto</th>
+                    <th>Unidades</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-set="lines" t-value="[line for order in docs for line in order.order_line.filtered(lambda l: not l.display_type and l.product_id.is_weighed == is_weighed_filter)]"/>
+                <t t-foreach="sorted(lines, key=lambda l: (l.product_id.name or '', l.order_id.partner_id.name or ''))" t-as="line">
+                    <tr>
+                        <td><span t-field="line.order_id.partner_id.name"/></td>
+                        <td><span t-field="line.product_id.name"/></td>
+                        <td class="text-center"><span t-field="line.unidades"/></td>
+                        <td class="text-center"><span t-field="line.product_uom_qty"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </template>
+    <template id="report_sale_order_unidades_pesado">
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
-                <t t-set="company" t-value="docs[0].company_id if docs else None"/>
                 <div class="page">
-                    <h2 class="text-center">Informe de Unidades</h2>
-                    <table class="table table-borderless table-sm mt-3">
-                        <thead>
-                            <tr>
-                                <th>Cliente</th>
-                                <th>Producto</th>
-                                <th>Unidades</th>
-                                <th>Cantidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-set="all_lines" t-value="[line for order in docs for line in order.order_line.filtered(lambda l: not l.display_type)]"/>
-                            <t t-foreach="sorted(all_lines, key=lambda l: (l.product_id.name or '', l.order_id.partner_id.name or ''))" t-as="line">
-                                    <tr>
-                                        <td><span t-field="line.order_id.partner_id.name"/></td>
-                                        <td><span t-field="line.product_id.name"/></td>
-                                        <td class="text-center"><span t-field="line.unidades"/></td>
-                                        <td class="text-center"><span t-field="line.product_uom_qty"/></td>
-                                    </tr>
-                            </t>
-                        </tbody>
-                    </table>
+                    <t t-call="embutidos_distribuitor_units.report_sale_order_unidades_table">
+                        <t t-set="is_weighed_filter" t-value="True"/>
+                        <t t-set="titulo_tipo" t-value="'Pesar'"/>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+    <template id="report_sale_order_unidades_no_pesado">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <t t-call="embutidos_distribuitor_units.report_sale_order_unidades_table">
+                        <t t-set="is_weighed_filter" t-value="False"/>
+                        <t t-set="titulo_tipo" t-value="''"/>
+                    </t>
                 </div>
             </t>
         </t>
