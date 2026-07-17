@@ -17,6 +17,28 @@
             <field name="payment_term_id" position="after">
                 <field name="repartidor_empleado_id" placeholder="Repartidor"/>
             </field>
+            <xpath expr="//button[@name='sale.action_report_saleorder']" position="attributes">
+                <attribute name="name">action_print_smart_report</attribute>
+                <attribute name="type">object</attribute>
+                <attribute name="string">Impresión Inteligente</attribute>
+                <attribute name="invisible">0</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale.action_report_saleorder" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <record id="action_sale_order_smart_print" model="ir.actions.server">
+        <field name="name">Impresión Inteligente</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="state">code</field>
+        <field name="code">
+if record:
+    action = record.action_print_smart_report()
         </field>
     </record>
 
