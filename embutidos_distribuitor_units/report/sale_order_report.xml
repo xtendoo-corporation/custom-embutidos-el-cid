@@ -36,8 +36,9 @@
                 <tr>
                     <th>Cliente</th>
                     <th>Producto</th>
-                    <th>Unidades</th>
-                    <th>Cantidad</th>
+                    <th class="text-center">Embalaje</th>
+                    <th class="text-center">Unidades</th>
+                    <th class="text-center">Cantidad</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,6 +47,7 @@
                     <tr>
                         <td><span t-field="line.order_id.partner_id.name"/></td>
                         <td><span t-field="line.product_id.name"/></td>
+                        <td class="text-center"><span t-field="line.product_uom_id.name"/></td>
                         <td class="text-center"><span t-field="line.unidades"/></td>
                         <td class="text-center"><span t-field="line.product_uom_qty"/></td>
                     </tr>
