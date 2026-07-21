@@ -47,7 +47,7 @@ class SaleOrder(models.Model):
         return True
 
     def action_sale_order_confirm_and_invoice(self):
-        if not self.partner_id.invoicing_directly:
+        if not self.partner_id.show_sale_buttons:
             raise UserError(_("Este cliente no factura directo, usa el botón 'Confirmar y entregar'"))
         self.action_sale_order_confirm_and_delivery()
         invoices = self._create_invoices()

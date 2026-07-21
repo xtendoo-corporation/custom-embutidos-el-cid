@@ -1,12 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_partner_form_inherit_sale_buttons" model="ir.ui.view">
-        <field name="name">res.partner.form.inherit.sale.buttons</field>
+    <!-- Inherit the view from the OCA module and change visibility so the
+         "Force addresses" group is available for any child contact. -->
+    <record id="embutidoscid_partner_force_addresses_view" model="ir.ui.view">
+        <field name="name">res.partner.force.addresses.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="partner_contact_address_default.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Select the group that contains the partner_contact_domain field rather
+                 than relying on the 'string' attribute which is not allowed as a selector. -->
+            <xpath expr="//group[field[@name='partner_contact_domain']]" position="attributes">
+                <attribute name="invisible">not parent_id</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Place the 'show_sale_buttons' toggle inside the Sales group of the
+         Sales & Purchase page, visually near pricelist / sales options. We
+         still remove any previous occurrence to avoid duplicates. -->
+    <record id="embutidoscid_move_show_sale_buttons" model="ir.ui.view">
+        <field name="name">res.partner.show.sale.buttons.move</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='sale']" position="inside">
-                <field name="show_sale_buttons"/>
+            <!-- Remove any previous placement -->
+            <xpath expr="//field[@name='show_sale_buttons']" position="replace">
+                <!-- removed by embutidos_sale_custom to control placement -->
+            </xpath>
+            <!-- Insert inside the Sales group on the Sales & Purchase page -->
+            <xpath expr="//page[@name='sales_purchases']//group[@name='sale']" position="inside">
+                <field name="show_sale_buttons" widget="boolean_toggle"/>
             </xpath>
         </field>
     </record>
