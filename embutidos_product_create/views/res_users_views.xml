@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_embutidos" model="ir.ui.view">
+        <field name="name">res.users.embutidos.form</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <!-- Insertar campos junto al campo login para compatibilidad con diferentes versiones -->
+            <xpath expr="//field[@name='login']" position="after">
+                <group>
+                    <field name="allow_product_edit"/>
+                    <field name="product_key" password="True"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+
