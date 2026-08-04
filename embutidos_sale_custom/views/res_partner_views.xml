@@ -9,7 +9,7 @@
         <field name="arch" type="xml">
             <!-- Select the group that contains the partner_contact_domain field rather
                  than relying on the 'string' attribute which is not allowed as a selector. -->
-            <xpath expr="//group[field[@name='partner_contact_domain']]" position="attributes">
+            <xpath expr="//group[field[@name='partner_contact_id']]" position="attributes" optional="1">
                 <attribute name="invisible">not parent_id</attribute>
             </xpath>
         </field>

@@ -1,4 +1,7 @@
+import logging
 from odoo import fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class SaleOrder(models.Model):
@@ -12,6 +15,12 @@ class SaleOrder(models.Model):
     show_sale_buttons = fields.Boolean(
         related="partner_id.show_sale_buttons",
         string="Confirma, entregar y facturar activado",
+    )
+    impreso_unidades = fields.Boolean(
+        string="Impreso Unidades (Separado)",
+        copy=False,
+        readonly=True,
+        help="Indica si se ejecutó la acción 'Unidades por Pedido (Separados)' para este pedido",
     )
 
     def action_print_smart_report(self):
@@ -54,3 +63,40 @@ class SaleOrder(models.Model):
             )
 
         return self.env.ref("sale.action_report_saleorder").report_action(self)
+
+    def action_print_unidades_separadas(self):
+        """
+        Llamar a la implementación original (si existe) para generar el ZIP de 'Unidades por Pedido (Separados)'
+        y marcar los pedidos como impresos (campo `impreso_unidades`).
+        """
+        _logger.info('action_print_unidades_separadas called for sale.order ids: %s', self.ids)
+        # Llamamos a la implementación original si un módulo la provee
+        result = False
+        if hasattr(super(SaleOrder, self), 'action_print_unidades_separadas'):
+            _logger.debug('Found super implementation for action_print_unidades_separadas, calling it')
+            # Si el método original existe en otra clase, llamarlo
+            result = super(SaleOrder, self).action_print_unidades_separadas()
+            _logger.debug('Super implementation returned: %s', result)
+        else:
+            # Si no existe, intentamos ejecutar la acción servidor definida por XML
+            action = self.env.ref('embutidos_distribuitor_units.action_server_report_sale_order_unidades', False)
+            _logger.debug('Server action found: %s', bool(action))
+            if action:
+                # Ejecutar el código del servidor que invoca la generación
+                # action is an ir.actions.server; calling _run_server_action will execute it
+                for order in self:
+                    _logger.debug('Running server action for order id %s', order.id)
+                    action.with_context(active_id=order.id).run()
+                result = True
+                _logger.debug('Server action executed, result set True')
+
+        # Si la generación tuvo éxito (o asumimos éxito), marcamos los pedidos
+        try:
+            # Marcamos solo los pedidos actuales
+            self.write({'impreso_unidades': True})
+        except Exception:
+            # No queremos que falle la acción principal por un fallo al marcar el campo
+            pass
+
+        return result
+

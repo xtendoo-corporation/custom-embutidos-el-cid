@@ -47,6 +47,9 @@ if record:
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_tree"/>
         <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="impreso_unidades" string="Impreso"/>
+            </field>
             <field name="partner_id" position="before">
                 <field name="repartidor_empleado_id"/>
             </field>
@@ -58,6 +61,9 @@ if record:
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
         <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="impreso_unidades" string="Impreso"/>
+            </field>
             <field name="partner_id" position="before">
                 <field name="repartidor_empleado_id"/>
             </field>

@@ -7,6 +7,7 @@
         "sale_stock",
         "account",
         "embutidoscid_sale_order_picking_all_done",
+        "embutidos_distribuitor_units",
         "partner_contact_address_default",
     ],
     "data": [
