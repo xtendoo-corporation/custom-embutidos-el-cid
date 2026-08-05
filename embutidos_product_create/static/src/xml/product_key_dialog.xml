@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+  <t t-name="embutidos.ProductKeyDialog">
+    <Dialog size="'sm'" title="props.title" modalRef="modalRef">
+      <div class="o_dialog_body">
+        <div class="form-group">
+          <input type="password" t-att-placeholder="props.placeholder" t-model="state.value" class="form-control" t-on-keydown="(e) => { if (e.key === 'Enter') _confirm(); }"/>
+        </div>
+      </div>
+      <t t-set-slot="footer">
+        <button class="btn btn-primary" t-on-click="_confirm">Aceptar</button>
+        <button class="btn btn-secondary" t-on-click="_cancel">Cancelar</button>
+      </t>
+    </Dialog>
+  </t>
+
+</templates>
+
+

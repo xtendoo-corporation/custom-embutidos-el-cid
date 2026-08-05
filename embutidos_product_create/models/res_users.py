@@ -8,12 +8,7 @@ class ResUsers(models.Model):
 
     allow_product_edit = fields.Boolean(string='Permitir crear/editar productos', default=False)
     product_key = fields.Char(string='Clave modificación/creación de producto')
-    # Campo placeholder para compatibilidad con vistas externas que referencian printing_action
-    printing_action = fields.Char(string='Printing Action')
-    # Campo placeholder para compatibilidad con vistas que referencian printing_printer_id
-    # Temporalmente lo dejamos como Char para evitar errores durante la carga del registro
-    # (si instalas el módulo `base_report_to_printer` deberías cambiarlo a Many2one('printing.printer')).
-    printing_printer_id = fields.Char(string='Printing Printer')
+
     _temp_product_unlocked = fields.Boolean(string='Desbloqueo temporal producto', default=False)
     _temp_product_unlocked_time = fields.Datetime(string='Tiempo desbloqueo temporal')
 

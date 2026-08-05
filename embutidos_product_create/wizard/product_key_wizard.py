@@ -12,8 +12,12 @@ class ProductKeyWizard(models.TransientModel):
     def action_validate(self):
         user = self.env.user
         if user._validate_product_key(self.key):
-            # establecer desbloqueo temporal
+            # Set a short-lived temporary unlock for this user so the
+            # immediate create/write RPC can proceed. The create/write
+            # methods will clear this unlock after use. This enforces that
+            # the user must enter the key for every separate create/write
+            # operation (the unlock is not permanent).
             user._set_temp_unlock()
-            return {'type': 'ir.actions.client', 'tag': 'reload'}
+            return {'type': 'ir.actions.act_window_close'}
         raise UserError('Clave incorrecta.')
 
