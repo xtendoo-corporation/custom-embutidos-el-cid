@@ -10,7 +10,7 @@
           <Dialog size="'sm'" title="props.title" modalRef="modalRef">
             <div class="o_dialog_body">
               <div class="form-group">
-                <input type="password" t-att-placeholder="props.placeholder" t-model="state.value" class="form-control" t-on-keydown="_onKeydown" autocomplete="new-password" name="embutidos_product_key" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true"/>
+                <input type="text" t-att-placeholder="props.placeholder" t-model="state.value" class="form-control" t-on-keydown="_onKeydown" autocomplete="off" name="embutidos_product_key" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" style="-webkit-text-security: disc;"/>
               </div>
             </div>
             <t t-set-slot="footer">

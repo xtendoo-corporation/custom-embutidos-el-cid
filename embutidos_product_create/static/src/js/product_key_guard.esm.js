@@ -3,6 +3,7 @@ import { rpc } from '@web/core/network/rpc';
 import { FormController } from '@web/views/form/form_controller';
 import { ProductKeyDialog } from '@embutidos_product_create/js/components/product_key_dialog';
 import { ListController } from '@web/views/list/list_controller';
+import { Many2One } from '@web/views/fields/many2one/many2one';
 // Small helper that asks for the key in a modal dialog.
 // The key is validated on the server during create/write.
 async function askKeyUsingDialog(env, message) {
@@ -51,6 +52,23 @@ async function validateKeyForTarget(model, resId, isCreate, key) {
         is_create: isCreate,
         key,
     });
+}
+
+async function ensureKeyForTarget(env, model, resId, isCreate) {
+    const needs = await rpc('/embutidos/product/needs_key', {
+        model_name: model,
+        res_id: resId,
+        is_create: isCreate,
+    });
+    if (!needs || !needs.needs_key) {
+        return true;
+    }
+    const key = await askKeyUsingDialog(env, 'Introduzca la clave de modificación/creación de producto:');
+    if (!key) {
+        return false;
+    }
+    const validation = await validateKeyForTarget(model, resId, isCreate, key);
+    return !!(validation && validation.valid);
 }
 
 // Patch FormController to ask for the key before saving product records
@@ -127,6 +145,25 @@ patch(ListController.prototype, {
                 return false;
             }
         }
+    },
+});
+
+// Patch quick-create on many2one (autocomplete "Crear ...") to enforce key for products.
+patch(Many2One.prototype, {
+    async quickCreate(name) {
+        const relation = this.props?.relation || null;
+        if (relation === 'product.product' || relation === 'product.template') {
+            try {
+                const allowed = await ensureKeyForTarget(this.env, relation, null, true);
+                if (!allowed) {
+                    return;
+                }
+            } catch (e) {
+                console.error('embutidos_product_create: error in quick create guard', e);
+                return;
+            }
+        }
+        return super.quickCreate(name);
     },
 });
 
