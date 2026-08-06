@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
-  <t t-name="embutidos.ProductKeyDialog">
+  <t t-name="embutidos.ProductKeyDialog" owl="1">
     <Dialog size="'sm'" title="props.title" modalRef="modalRef">
       <div class="o_dialog_body">
         <div class="form-group">
-          <input type="password" t-att-placeholder="props.placeholder" t-model="state.value" class="form-control" t-on-keydown="(e) => { if (e.key === 'Enter') _confirm(); }"/>
+          <input type="password" t-att-placeholder="props.placeholder" t-model="state.value" class="form-control" t-on-keydown="_onKeydown" autocomplete="new-password" name="embutidos_product_key" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true"/>
         </div>
       </div>
       <t t-set-slot="footer">

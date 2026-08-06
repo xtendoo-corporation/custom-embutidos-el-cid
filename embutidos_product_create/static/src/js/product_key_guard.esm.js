@@ -3,11 +3,8 @@ import { rpc } from '@web/core/network/rpc';
 import { FormController } from '@web/views/form/form_controller';
 import { ProductKeyDialog } from '@embutidos_product_create/js/components/product_key_dialog';
 import { ListController } from '@web/views/list/list_controller';
-// Small helper that asks for the key by opening the existing server-side
-// transient wizard (`embutidos.product.key.wizard`) in a modal. The wizard
-// validates the key on the server and, on success, sets a temporary unlock
-// for the user. After the modal closes we re-check the server; if the user
-// is unlocked we return true, otherwise undefined (treated as cancel).
+// Small helper that asks for the key in a modal dialog.
+// The key is validated on the server during create/write.
 async function askKeyUsingDialog(env, message) {
     return new Promise((resolve) => {
         try {
@@ -24,8 +21,36 @@ async function askKeyUsingDialog(env, message) {
             resolve();
         }
     });
-    // If we reached here without returning the key, treat as cancelled
-    return;
+}
+
+function getRecordTarget(record) {
+    const isCreate = record?.isNew === true;
+    const candidateId = record?.resId ?? record?.data?.id ?? null;
+    const numericId = Number(candidateId);
+    const resId = Number.isInteger(numericId) && numericId > 0 ? numericId : null;
+    return {
+        resId,
+        isCreate: isCreate || !resId,
+    };
+}
+
+function resetProductKeyContext(controller) {
+    const baseContext = Object.assign({}, controller.model?.config?.context || {});
+    delete baseContext.product_key;
+    delete baseContext.product_key_model_name;
+    delete baseContext.product_key_record_id;
+    delete baseContext.product_key_is_create;
+    controller.model.config.context = baseContext;
+    return baseContext;
+}
+
+async function validateKeyForTarget(model, resId, isCreate, key) {
+    return rpc('/embutidos/product/validate_key', {
+        model_name: model,
+        res_id: resId,
+        is_create: isCreate,
+        key,
+    });
 }
 
 // Patch FormController to ask for the key before saving product records
@@ -41,20 +66,28 @@ patch(FormController.prototype, {
         const model = this.model?.root?.resModel || null;
         if (model === 'product.product' || model === 'product.template') {
             try {
-                const needs = await rpc('/embutidos/product/needs_key');
+                const { resId, isCreate } = getRecordTarget(record);
+                resetProductKeyContext(this);
+                const needs = await rpc('/embutidos/product/needs_key', {
+                    model_name: model,
+                    res_id: resId,
+                    is_create: isCreate,
+                });
                 if (needs && needs.needs_key) {
                     const key = await askKeyUsingDialog(this.env, 'Introduzca la clave de modificación/creación de producto:');
                     if (!key) {
                         // user cancelled or validation failed -> abort save
                         return false;
                     }
-                    // inject the validated key into the model config context so
-                    // the upcoming RPC create/write will include it in env.context
-                    this.model.config.context = Object.assign({}, this.model.config.context || {}, { product_key: key });
+                    const validation = await validateKeyForTarget(model, resId, isCreate, key);
+                    if (!validation || !validation.valid) {
+                        return false;
+                    }
                 }
             } catch (e) {
-                // On RPC errors, let the save proceed and server will handle validation
+                // Fail closed: if guard RPC fails, do not continue with save.
                 console.error('embutidos_product_create: error checking needs_key', e);
+                return false;
             }
         }
     },
@@ -72,16 +105,26 @@ patch(ListController.prototype, {
         const model = this.model?.root?.resModel || null;
         if (model === 'product.product' || model === 'product.template') {
             try {
-                const needs = await rpc('/embutidos/product/needs_key');
+                const { resId, isCreate } = getRecordTarget(record);
+                resetProductKeyContext(this);
+                const needs = await rpc('/embutidos/product/needs_key', {
+                    model_name: model,
+                    res_id: resId,
+                    is_create: isCreate,
+                });
                 if (needs && needs.needs_key) {
                     const key = await askKeyUsingDialog(this.env, 'Introduzca la clave de modificación/creación de producto:');
                     if (!key) {
                         return false;
                     }
-                    this.model.config.context = Object.assign({}, this.model.config.context || {}, { product_key: key });
+                    const validation = await validateKeyForTarget(model, resId, isCreate, key);
+                    if (!validation || !validation.valid) {
+                        return false;
+                    }
                 }
             } catch (e) {
                 console.error('embutidos_product_create: error checking needs_key', e);
+                return false;
             }
         }
     },

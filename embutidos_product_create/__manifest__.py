@@ -22,7 +22,8 @@
     "assets": {
         "web.assets_backend": [
             "embutidos_product_create/static/src/js/components/product_key_dialog.js",
-            "embutidos_product_create/static/src/js/product_key_guard.esm.js"
+            "embutidos_product_create/static/src/js/product_key_guard.esm.js",
+            "embutidos_product_create/static/src/xml/product_key_dialog.xml",
         ],
         "web.assets_qweb": [
             "embutidos_product_create/static/src/xml/product_key_dialog.xml"
