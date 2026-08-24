@@ -100,3 +100,4 @@ class SaleOrder(models.Model):
 
         return result
 
+
