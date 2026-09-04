@@ -6,7 +6,11 @@
     "author": "Daniel Domínguez (xtendoo)",
     "website": "https://xtendoo.es",
     "license": "AGPL-3",
-    "depends": ["sale_stock", "product_expiry"],
+    "depends": [
+        "sale_stock",
+        "product_expiry",
+        "embutidoscid_sale_order_lot_selection_with_default_FEFO",
+    ],
     "data": [
         "reports/stock_picking_report_templates.xml",
         "reports/sale_order_report_templates.xml",
