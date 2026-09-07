@@ -28,6 +28,10 @@
                 html {
                     font-size: 11.5px;
                 }
+                .o_total_table tr.o_taxes,
+                .o_total_table tr.o_total {
+                    display: none;
+                }
             </style>
         </xpath>
 
