@@ -37,8 +37,8 @@
         <field name="binding_type">report</field>
         <field name="state">code</field>
         <field name="code">
-if record:
-    action = record.action_print_smart_report()
+if records:
+    action = records.action_print_smart_report()
         </field>
     </record>
 

@@ -1,5 +1,6 @@
 import logging
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -23,7 +24,9 @@ class SaleOrder(models.Model):
         help="Indica si se ejecutó la acción 'Unidades por Pedido (Separados)' para este pedido",
     )
 
-    def action_print_smart_report(self):
+    def _get_smart_print_target(self):
+        """Devuelve (informe, registros) a imprimir para este pedido:
+        factura > albarán de entrega > pedido de venta."""
         self.ensure_one()
         # 1. Intentar obtener facturas a través de los campos estándar
         invoices = self.invoice_ids.filtered(
@@ -47,22 +50,53 @@ class SaleOrder(models.Model):
         if invoices:
             # Priorizamos las facturas publicadas ('posted') para imprimir
             posted_invoices = invoices.filtered(lambda x: x.state == "posted")
-            # Si hay facturas publicadas, preferimos esas, si no, las que haya (draft etc)
-            invoices_to_print = posted_invoices or invoices
-            return self.env.ref("account.account_invoices").report_action(invoices_to_print)
+            return self.env.ref("account.account_invoices"), posted_invoices or invoices
 
         # Si no hay facturas, buscamos los albaranes
         pickings = self.picking_ids.filtered(lambda x: x.state != "cancel")
         if pickings:
             # Priorizamos albaranes finalizados
             done_pickings = pickings.filtered(lambda x: x.state == "done")
-            picking_to_print = done_pickings or pickings
-            # Usar 'action_report_delivery' (Vale de Entrega) en lugar de 'action_report_picking'
-            return self.env.ref("stock.action_report_delivery").report_action(
-                picking_to_print
-            )
+            # 'action_report_delivery' (Vale de Entrega) en lugar de 'action_report_picking'
+            return self.env.ref("stock.action_report_delivery"), done_pickings or pickings
 
-        return self.env.ref("sale.action_report_saleorder").report_action(self)
+        return self.env.ref("sale.action_report_saleorder"), self
+
+    def action_print_smart_report(self):
+        if len(self) == 1:
+            report, records = self._get_smart_print_target()
+            return report.report_action(records)
+
+        # Varios pedidos: cada impresión se envía por separado a la cola de
+        # impresión (base_report_to_printer), en el orden de la selección.
+        if not hasattr(self.env["ir.actions.report"], "print_document"):
+            raise UserError(_(
+                "Para imprimir varios pedidos se necesita el módulo base_report_to_printer."
+            ))
+        printed, failed = [], []
+        for order in self:
+            report, records = order._get_smart_print_target()
+            try:
+                with self.env.cr.savepoint():
+                    report.print_document(records.ids)
+                order.impreso_unidades = True
+                printed.append(order.name)
+            except Exception as e:
+                _logger.exception("Impresión inteligente fallida para %s", order.name)
+                failed.append("%s: %s" % (order.name, e))
+        message = _("Enviados a la cola de impresión: %s", ", ".join(printed) or "-")
+        if failed:
+            message += "\n" + _("Con error: %s", "; ".join(failed))
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Impresión Inteligente"),
+                "message": message,
+                "type": "warning" if failed else "success",
+                "sticky": bool(failed),
+            },
+        }
 
     def action_print_unidades_separadas(self):
         """
