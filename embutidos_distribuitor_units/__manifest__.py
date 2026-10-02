@@ -8,6 +8,11 @@
         "views/account_move_views.xml",
         "report/sale_order_report.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "embutidos_distribuitor_units/static/src/js/smart_print_queue.esm.js",
+        ],
+    },
     "installable": True,
     "license": "LGPL-3",
 }

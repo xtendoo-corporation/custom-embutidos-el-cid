@@ -1,6 +1,5 @@
 import logging
-from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -67,35 +66,17 @@ class SaleOrder(models.Model):
             report, records = self._get_smart_print_target()
             return report.report_action(records)
 
-        # Varios pedidos: cada impresión se envía por separado a la cola de
-        # impresión (base_report_to_printer), en el orden de la selección.
-        if not hasattr(self.env["ir.actions.report"], "print_document"):
-            raise UserError(_(
-                "Para imprimir varios pedidos se necesita el módulo base_report_to_printer."
-            ))
-        printed, failed = [], []
+        # Varios pedidos: una impresión por pedido, lanzadas en cola desde el
+        # cliente en el orden de la selección (así funciona QZ Tray, etc.).
+        jobs = []
         for order in self:
             report, records = order._get_smart_print_target()
-            try:
-                with self.env.cr.savepoint():
-                    report.print_document(records.ids)
-                order.impreso_unidades = True
-                printed.append(order.name)
-            except Exception as e:
-                _logger.exception("Impresión inteligente fallida para %s", order.name)
-                failed.append("%s: %s" % (order.name, e))
-        message = _("Enviados a la cola de impresión: %s", ", ".join(printed) or "-")
-        if failed:
-            message += "\n" + _("Con error: %s", "; ".join(failed))
+            jobs.append(report.report_action(records))
+        self.write({"impreso_unidades": True})
         return {
             "type": "ir.actions.client",
-            "tag": "display_notification",
-            "params": {
-                "title": _("Impresión Inteligente"),
-                "message": message,
-                "type": "warning" if failed else "success",
-                "sticky": bool(failed),
-            },
+            "tag": "embutidos_print_queue",
+            "params": {"jobs": jobs},
         }
 
     def action_print_unidades_separadas(self):
