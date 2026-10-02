@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="act_report_xml_view_marca_impreso" model="ir.ui.view">
+        <field name="name">ir.actions.report.marca.impreso</field>
+        <field name="model">ir.actions.report</field>
+        <field name="inherit_id" ref="base.act_report_xml_view"/>
+        <field name="arch" type="xml">
+            <field name="report_name" position="after">
+                <field name="marca_impreso" invisible="model != 'sale.order' and model != 'stock.picking' and model != 'account.move'"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Los informes de Unidades no cuentan como impresos -->
+    <record id="embutidos_distribuitor_units.action_report_sale_order_unidades_pesadas" model="ir.actions.report">
+        <field name="marca_impreso" eval="False"/>
+    </record>
+    <record id="embutidos_distribuitor_units.action_report_sale_order_unidades_no_pesadas" model="ir.actions.report">
+        <field name="marca_impreso" eval="False"/>
+    </record>
+</odoo>

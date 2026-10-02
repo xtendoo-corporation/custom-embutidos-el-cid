@@ -13,6 +13,7 @@
     "data": [
         "views/sale_order_views.xml",
         "views/res_partner_views.xml",
+        "views/ir_actions_report_views.xml",
     ],
     "installable": True,
     "license": "LGPL-3",

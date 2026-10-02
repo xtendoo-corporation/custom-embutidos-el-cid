@@ -1,6 +1,6 @@
 import logging
 import re
-from odoo import models
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -15,6 +15,13 @@ class IrActionsReport(models.Model):
     """
 
     _inherit = "ir.actions.report"
+
+    marca_impreso = fields.Boolean(
+        string="Marcar pedidos como impresos",
+        default=True,
+        help="Si está activo, al imprimir este informe los pedidos de venta "
+             "relacionados se marcan como impresos (impreso_unidades).",
+    )
 
     def report_action(self, *args, **kwargs):
         # Llamar primero a la implementación original usando la firma que toque
@@ -77,6 +84,8 @@ class IrActionsReport(models.Model):
                 except Exception:
                     _logger.debug('report_action called for report record, pero fallo al loguear detalles')
 
+                if not report.marca_impreso:
+                    continue
                 if not model_name or not _res_ids:
                     _logger.debug('Skipping report %s because no model or no ids resolved (model=%s ids=%s)', getattr(report, 'id', None), model_name, _res_ids)
                     continue
@@ -135,7 +144,7 @@ class IrActionsReport(models.Model):
         try:
             for report in self:
                 model_name = getattr(report, 'model', False)
-                if not model_name or not _docids:
+                if not report.marca_impreso or not model_name or not _docids:
                     continue
                 try:
                     records = self.env[model_name].browse(_docids)

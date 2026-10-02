@@ -18,7 +18,6 @@ class SaleOrder(models.Model):
         )
         jobs = [report.report_action(self) for report in reports]
 
-        self.write({'impreso_unidades': True})
         return {
             'type': 'ir.actions.client',
             'tag': 'embutidos_print_queue',

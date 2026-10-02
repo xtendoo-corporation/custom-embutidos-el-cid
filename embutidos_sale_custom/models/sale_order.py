@@ -105,14 +105,7 @@ class SaleOrder(models.Model):
                 result = True
                 _logger.debug('Server action executed, result set True')
 
-        # Si la generación tuvo éxito (o asumimos éxito), marcamos los pedidos
-        try:
-            # Marcamos solo los pedidos actuales
-            self.write({'impreso_unidades': True})
-        except Exception:
-            # No queremos que falle la acción principal por un fallo al marcar el campo
-            pass
-
+        # No se marca `impreso_unidades`: este informe no cuenta como impreso.
         return result
 
 
