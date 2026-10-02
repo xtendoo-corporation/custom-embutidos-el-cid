@@ -4,6 +4,8 @@ import { FormController } from '@web/views/form/form_controller';
 import { ProductKeyDialog } from '@embutidos_product_create/js/components/product_key_dialog';
 import { ListController } from '@web/views/list/list_controller';
 import { Many2One } from '@web/views/fields/many2one/many2one';
+const GUARDED_MODELS = ['product.product', 'product.template', 'res.partner'];
+
 // Small helper that asks for the key in a modal dialog.
 // The key is validated on the server during create/write.
 async function askKeyUsingDialog(env, message) {
@@ -63,7 +65,7 @@ async function ensureKeyForTarget(env, model, resId, isCreate) {
     if (!needs || !needs.needs_key) {
         return true;
     }
-    const key = await askKeyUsingDialog(env, 'Introduzca la clave de modificación/creación de producto:');
+    const key = await askKeyUsingDialog(env, 'Introduzca la clave de modificación/creación:');
     if (!key) {
         return false;
     }
@@ -82,7 +84,7 @@ patch(FormController.prototype, {
             }
         }
         const model = this.model?.root?.resModel || null;
-        if (model === 'product.product' || model === 'product.template') {
+        if (GUARDED_MODELS.includes(model)) {
             try {
                 const { resId, isCreate } = getRecordTarget(record);
                 resetProductKeyContext(this);
@@ -92,7 +94,7 @@ patch(FormController.prototype, {
                     is_create: isCreate,
                 });
                 if (needs && needs.needs_key) {
-                    const key = await askKeyUsingDialog(this.env, 'Introduzca la clave de modificación/creación de producto:');
+                    const key = await askKeyUsingDialog(this.env, 'Introduzca la clave de modificación/creación:');
                     if (!key) {
                         // user cancelled or validation failed -> abort save
                         return false;
@@ -121,7 +123,7 @@ patch(ListController.prototype, {
             }
         }
         const model = this.model?.root?.resModel || null;
-        if (model === 'product.product' || model === 'product.template') {
+        if (GUARDED_MODELS.includes(model)) {
             try {
                 const { resId, isCreate } = getRecordTarget(record);
                 resetProductKeyContext(this);
@@ -131,7 +133,7 @@ patch(ListController.prototype, {
                     is_create: isCreate,
                 });
                 if (needs && needs.needs_key) {
-                    const key = await askKeyUsingDialog(this.env, 'Introduzca la clave de modificación/creación de producto:');
+                    const key = await askKeyUsingDialog(this.env, 'Introduzca la clave de modificación/creación:');
                     if (!key) {
                         return false;
                     }
@@ -152,7 +154,7 @@ patch(ListController.prototype, {
 patch(Many2One.prototype, {
     async quickCreate(name) {
         const relation = this.props?.relation || null;
-        if (relation === 'product.product' || relation === 'product.template') {
+        if (GUARDED_MODELS.includes(relation)) {
             try {
                 const allowed = await ensureKeyForTarget(this.env, relation, null, true);
                 if (!allowed) {

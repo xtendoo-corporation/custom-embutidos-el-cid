@@ -21,6 +21,7 @@ def _check_user_product_permissions(
     record_ids=None,
     is_create=False,
     context_key_name='product_key',
+    subject='productos',
 ):
     """Helper: comprueba permisos para crear/editar productos para el usuario.
     - Si user.allow_product_edit False: lanza AccessError.
@@ -33,7 +34,7 @@ def _check_user_product_permissions(
         return True
     # No hay bypass para superuser: solo los usuarios con la casilla marcada pueden crear/editar
     if not user.allow_product_edit:
-        raise AccessError('No tiene permiso para crear o modificar productos.')
+        raise AccessError('No tiene permiso para crear o modificar %s.' % subject)
     target_signature = user._build_product_target_signature(
         model_name=model_name,
         record_ids=record_ids,
@@ -120,3 +121,49 @@ class ProductProduct(models.Model):
             )
         return res
 
+
+
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    def _embutidos_partner_guard_skip(self):
+        """Operaciones internas que no deben pedir clave: llamadas con sudo
+        (registro, creación de usuarios, cron...) y edición del propio contacto
+        del usuario (preferencias)."""
+        user = self.env.user
+        if self.env.su:
+            return True
+        return bool(self) and self == user.partner_id
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        user = self.env.user
+        if not self.env.su:
+            _check_user_product_permissions(
+                user, model_name=self._name, is_create=True, subject='contactos',
+            )
+        records = super(ResPartner, self.with_context(embutidos_product_guard_bypass=True)).create(vals_list)
+        if not self.env.su and len(records) == 1:
+            user._set_temp_unlock(
+                target_signature=user._build_product_target_signature(
+                    model_name=self._name,
+                    record_ids=records.ids,
+                )
+            )
+        return records
+
+    def write(self, vals):
+        user = self.env.user
+        if not self._embutidos_partner_guard_skip():
+            _check_user_product_permissions(
+                user, model_name=self._name, record_ids=self.ids, subject='contactos',
+            )
+        res = super(ResPartner, self.with_context(embutidos_product_guard_bypass=True)).write(vals)
+        if not self.env.su and len(self.ids) == 1 and self != user.partner_id:
+            user._set_temp_unlock(
+                target_signature=user._build_product_target_signature(
+                    model_name=self._name,
+                    record_ids=self.ids,
+                )
+            )
+        return res
