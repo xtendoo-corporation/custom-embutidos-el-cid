@@ -1,6 +1,8 @@
+import io
 import logging
 import re
 from odoo import fields, models
+from odoo.tools.pdf import PdfFileReader, PdfFileWriter
 
 _logger = logging.getLogger(__name__)
 
@@ -22,6 +24,46 @@ class IrActionsReport(models.Model):
         help="Si está activo, al imprimir este informe los pedidos de venta "
              "relacionados se marcan como impresos (impreso_unidades).",
     )
+
+    def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
+        """Si el contexto lleva `embutidos_copia_watermark`, añade la marca de
+        agua COPIA a todas las páginas del PDF (impresión inteligente 2 copias)."""
+        pdf, report_type = super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+        if report_type == 'pdf' and self.env.context.get('embutidos_copia_watermark'):
+            pdf = self._embutidos_add_copy_watermark(pdf)
+        return pdf, report_type
+
+    def _embutidos_add_copy_watermark(self, pdf_content, text='COPIA'):
+        from reportlab.lib import colors
+        from reportlab.pdfgen import canvas
+
+        old_pdf = PdfFileReader(io.BytesIO(pdf_content), strict=False)
+        packet = io.BytesIO()
+        can = canvas.Canvas(packet)
+        for p in range(old_pdf.getNumPages()):
+            page = old_pdf.getPage(p)
+            width = float(abs(page.mediaBox.getWidth()))
+            height = float(abs(page.mediaBox.getHeight()))
+            can.setPageSize((width, height))
+            can.saveState()
+            can.translate(width / 2, height / 2)
+            can.rotate(45)
+            can.setFillColor(colors.Color(0.5, 0.5, 0.5, alpha=0.3))
+            can.setFont('Helvetica-Bold', min(width, height) / 3.5)
+            can.drawCentredString(0, 0, text)
+            can.restoreState()
+            can.showPage()
+        can.save()
+
+        watermark_pdf = PdfFileReader(packet)
+        new_pdf = PdfFileWriter()
+        for p in range(old_pdf.getNumPages()):
+            new_pdf.addPage(old_pdf.getPage(p))
+            new_page = new_pdf.getPage(-1)
+            new_page.mergePage(watermark_pdf.getPage(p))
+        output = io.BytesIO()
+        new_pdf.write(output)
+        return output.getvalue()
 
     def report_action(self, *args, **kwargs):
         # Llamar primero a la implementación original usando la firma que toque

@@ -23,6 +23,10 @@
                 <attribute name="string">Impresión Inteligente</attribute>
                 <attribute name="invisible">0</attribute>
             </xpath>
+            <xpath expr="//button[@name='action_print_smart_report']" position="after">
+                <button name="action_print_smart_report_copies" type="object"
+                        string="Impresión Inteligente 2 Copias"/>
+            </xpath>
         </field>
     </record>
 
@@ -39,6 +43,18 @@
         <field name="code">
 if records:
     action = records.action_print_smart_report()
+        </field>
+    </record>
+
+    <record id="action_sale_order_smart_print_copies" model="ir.actions.server">
+        <field name="name">Impresión Inteligente 2 Copias</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    action = records.action_print_smart_report_copies()
         </field>
     </record>
 

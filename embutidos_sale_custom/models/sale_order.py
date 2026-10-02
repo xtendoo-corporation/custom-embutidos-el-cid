@@ -79,6 +79,21 @@ class SaleOrder(models.Model):
             "params": {"jobs": jobs},
         }
 
+    def action_print_smart_report_copies(self):
+        """Impresión inteligente con 2 copias: por cada pedido se lanza la
+        impresión y a continuación una segunda con marca de agua COPIA."""
+        jobs = []
+        for order in self:
+            report, records = order._get_smart_print_target()
+            jobs.append(report.report_action(records))
+            jobs.append(report.with_context(embutidos_copia_watermark=True).report_action(records))
+        self.write({"impreso_unidades": True})
+        return {
+            "type": "ir.actions.client",
+            "tag": "embutidos_print_queue",
+            "params": {"jobs": jobs},
+        }
+
     def action_print_unidades_separadas(self):
         """
         Llamar a la implementación original (si existe) para generar el ZIP de 'Unidades por Pedido (Separados)'
